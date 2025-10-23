@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TGA-Tools Dashboard</title>
+  
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="/shared/css/variables.css">
+  <link rel="stylesheet" href="/shared/css/base.css">
+  <link rel="stylesheet" href="/shared/css/components.css">
+  
+  <!-- Estilos del dashboard -->
+  <link rel="stylesheet" href="/dashboard/assets/css/dashboard.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="8" fill="var(--primary)"/>
+            <path d="M12 12H28V16H20V28H16V16H12V12Z" fill="white"/>
+          </svg>
+          <h1>TGA-Tools</h1>
+        </div>
+        
+        <nav class="nav">
+          <a href="/" class="nav-link active">Dashboard</a>
+          <a href="#" class="nav-link">Documentación</a>
+          <a href="#" class="nav-link">Ayuda</a>
+        </nav>
+
+        <div class="user-info">
+          <span class="status-dot"></span>
+          <span class="user-name">Sistema Operativo</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="container">
+      <!-- Hero -->
+      <section class="hero">
+        <h2>Herramientas Administrativas</h2>
+        <p>Selecciona una herramienta para comenzar</p>
+      </section>
+
+      <!-- Tools Grid -->
+      <section class="tools-grid">
+        <!-- Extractos Bancarios -->
+        <article class="tool-card" data-app="extractos">
+          <div class="tool-icon extractos-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M8 7h8M8 11h8M8 15h5"/>
+            </svg>
+          </div>
+          
+          <div class="tool-content">
+            <h3>Extractos Bancarios</h3>
+            <p>Procesa PDFs de extractos bancarios y conviértelos a Excel con OCR.</p>
+            
+            <div class="tool-features">
+              <span class="badge">OCR</span>
+              <span class="badge">Celery</span>
+              <span class="badge">Async</span>
+            </div>
+          </div>
+          
+          <div class="tool-footer">
+            <button class="btn btn-primary" onclick="openApp('extractos')">
+              <span>Abrir</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- Siradig -->
+        <article class="tool-card" data-app="siradig">
+          <div class="tool-icon siradig-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              <path d="M9 22V12h6v10"/>
+            </svg>
+          </div>
+          
+          <div class="tool-content">
+            <h3>Siradig</h3>
+            <p>Sistema de registro y análisis de información digitalizada.</p>
+            
+            <div class="tool-features">
+              <span class="badge">Flask</span>
+              <span class="badge">Análisis</span>
+            </div>
+          </div>
+          
+          <div class="tool-footer">
+            <button class="btn btn-primary" onclick="openApp('siradig')">
+              <span>Abrir</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- Consolidado -->
+        <article class="tool-card" data-app="consolidado">
+          <div class="tool-icon consolidado-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>
+            </svg>
+          </div>
+          
+          <div class="tool-content">
+            <h3>Consolidado</h3>
+            <p>Herramienta de consolidación de datos múltiples.</p>
+            
+            <div class="tool-features">
+              <span class="badge">Excel</span>
+              <span class="badge">Reportes</span>
+            </div>
+          </div>
+          
+          <div class="tool-footer">
+            <button class="btn btn-primary" onclick="openApp('consolidado')">
+              <span>Abrir</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- System Status -->
+      <section class="system-status">
+        <h3>Estado del Sistema</h3>
+        <div class="status-grid">
+          <div class="status-item">
+            <span class="status-icon">🔴</span>
+            <span class="status-label">Redis</span>
+            <span class="status-value" id="redis-status">Verificando...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-icon">🌐</span>
+            <span class="status-label">Nginx</span>
+            <span class="status-value">Operativo</span>
+          </div>
+          <div class="status-item">
+            <span class="status-icon">⚙️</span>
+            <span class="status-label">Servicios</span>
+            <span class="status-value">3/3 Activos</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 TGA-Tools. Sistema de Herramientas Administrativas.</p>
+      <div class="footer-links">
+        <a href="#">Documentación</a>
+        <a href="#">Versión 1.0.0</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Scripts -->
+  <script src="/shared/js/utils.js"></script>
+  <script src="/shared/js/api.js"></script>
+  <script src="/dashboard/assets/js/dashboard.js"></script>
+</body>
+</html>

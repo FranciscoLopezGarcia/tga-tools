@@ -97,10 +97,14 @@ def _coerce_period_cols(df: pd.DataFrame) -> pd.DataFrame:
 
 def _build_period_and_order_date(df: pd.DataFrame) -> pd.DataFrame:
     # periodo = primer día del mes (para ordenar por mes aún si falta 'fecha')
+    # 🔧 Rellenar NA en año/mes ANTES de convertir a Int64
+    df["año"] = pd.to_numeric(df["año"], errors="coerce").fillna(2025)
+    df["mes"] = pd.to_numeric(df["mes"], errors="coerce").fillna(1)
+    
     df["periodo_sort"] = pd.to_datetime(
         dict(
-            year=df["año"].astype("float").astype("Int64"),
-            month=df["mes"].astype("float").astype("Int64"),
+            year=df["año"].astype("int"),
+            month=df["mes"].astype("int"),
             day=1,
         ),
         errors="coerce",

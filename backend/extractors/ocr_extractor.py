@@ -7,8 +7,15 @@ from pdf2image import convert_from_path
 import pytesseract
 from PIL import Image, ImageOps
 
-logger = logging.getLogger(__name__)
+# 👇 Integración con config.py de tga-tools
+try:
+    from config import TESSERACT_PATH, POPPLER_PATH
+except ImportError:
+    # fallback si se ejecuta standalone
+    TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    POPPLER_PATH = r"C:\poppler-24.08.0\bin"
 
+logger = logging.getLogger(__name__)
 
 class OCRExtractor:
     def __init__(
@@ -17,10 +24,7 @@ class OCRExtractor:
         tesseract_cmd: str = None,
         poppler_bin: str = None,
     ):
-        """
-        OCR con Tesseract (Docker / Linux / Windows).
-        Detecta automáticamente el entorno y usa los paths correctos.
-        """
+        """OCR con Tesseract (Docker / Linux / Windows)."""
         
         # 🔧 DETECCIÓN AUTOMÁTICA DE ENTORNO
         is_docker = os.path.exists("/.dockerenv") or os.getenv("DOCKER_CONTAINER") == "true"
@@ -31,8 +35,8 @@ class OCRExtractor:
             default_tesseract = "/usr/bin/tesseract"
             default_poppler = "/usr/bin"
         elif is_windows:
-            default_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-            default_poppler = r"C:\poppler-24.08.0\bin"
+            default_tesseract = TESSERACT_PATH
+            default_poppler = POPPLER_PATH
         else:
             default_tesseract = "/usr/bin/tesseract"
             default_poppler = "/usr/bin"
@@ -59,11 +63,9 @@ class OCRExtractor:
         if not os.path.exists(self.poppler_bin):
             logger.warning(f"⚠️  Poppler no encontrado en: {self.poppler_bin}")
         
-        # Configuración OCR
         pytesseract.pytesseract.tesseract_cmd = self.tesseract_cmd
         self.tess_config = "--oem 1 --psm 6"
         
-        # Keywords de tablas
         self.header_keywords = {
             "fecha", "concepto", "descripción", "descripcion", "detalle",
             "importe", "saldo", "débito", "debito", "crédito", "credito",
@@ -71,15 +73,12 @@ class OCRExtractor:
             "Débito", "Crédito", "Debito", "Credito"
         }
         
-        # Patrones
         self.re_fecha = re.compile(r"\b([0-3]?\d)[/-]([01]?\d)[/-](\d{2}|\d{4})\b")
         self.re_importe = re.compile(r"(?<!\w)(?:-?\$?\s?\d{1,3}(?:[.,]\d{3})*[.,]\d{2})(?!\w)")
         
         logger.info(
-            f"OCRExtractor inicializado | "
-            f"Entorno: {'Docker' if is_docker else 'Local'} | "
-            f"Poppler: {self.poppler_bin} | "
-            f"Tesseract: {self.tesseract_cmd}"
+            f"OCRExtractor inicializado | Entorno: {'Docker' if is_docker else 'Local'} | "
+            f"Poppler: {self.poppler_bin} | Tesseract: {self.tesseract_cmd}"
         )
 
     def _preprocess(self, img: Image.Image, scale: float = 1.35, thr: int = 180) -> Image.Image:
@@ -109,11 +108,7 @@ class OCRExtractor:
         logger.info(f"OCR quick pass (dpi={dpi_quick}) → {pdf_path}")
         
         try:
-            imgs_quick = convert_from_path(
-                pdf_path, 
-                dpi=dpi_quick, 
-                poppler_path=self.poppler_bin
-            )
+            imgs_quick = convert_from_path(pdf_path, dpi=dpi_quick, poppler_path=self.poppler_bin)
         except Exception as e:
             logger.error(f"❌ convert_from_path (quick) falló: {e}")
             try:
@@ -145,9 +140,8 @@ class OCRExtractor:
 
         logger.info(f"OCR full pass (dpi={dpi_full}) solo en páginas {relevantes_idx}")
         
-        # 🔧 PROCESAR EN LOTES PARA NO QUEDARSE SIN RAM
         resultados: List[Tuple[int, str]] = []
-        BATCH_SIZE = 10  # Procesar de a 10 páginas
+        BATCH_SIZE = 10
 
         for i in range(0, len(relevantes_idx), BATCH_SIZE):
             batch = relevantes_idx[i:i + BATCH_SIZE]
@@ -172,17 +166,11 @@ class OCRExtractor:
                     except Exception as e:
                         logger.error(f"OCR full falló en página {idx}: {e}")
                 
-                # 🔧 Liberar memoria del lote
                 del imgs_batch
-                
             except Exception as e:
                 logger.error(f"❌ Error procesando lote {batch}: {e}")
 
         return resultados
-
-    def extract_text_from_pdf(self, pdf_path: str) -> str:
-        pages = self.extract_text_pages(pdf_path)
-        return "\n\n".join([f"--- Página {p} ---\n{t}" for p, t in pages])
 
     def extract_text(self, pdf_path: str, dpi_quick=160, dpi_full=200) -> str:
         pages = self.extract_text_pages(pdf_path, dpi_quick=dpi_quick, dpi_full=dpi_full)

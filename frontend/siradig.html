@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siradig - TGA</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header header-tool">
+        <div class="header-container">
+            <a href="index.html" class="logo">tga</a>
+            <span class="tool-name">Siradig</span>
+            <a href="index.html" class="btn-back">← Volver al inicio</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container tool-container">
+        <!-- Drag and Drop Zone -->
+        <section class="upload-section" id="uploadSection">
+            <div class="upload-card">
+                <h2 class="section-title">Procesar Formularios F.572 Web</h2>
+                <p class="section-description">ARCA/AFIP - Procesamiento de formularios SIRADIG</p>
+                
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📊</div>
+                    <h3 class="drop-zone-title">Arrastra tus formularios aquí</h3>
+                    <p class="drop-zone-text">o haz clic para seleccionar</p>
+                    <p class="drop-zone-hint">Solo archivos PDF de formularios F.572</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf" multiple>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de archivos -->
+        <section class="files-section hidden" id="filesSection">
+            <div class="files-card">
+                <h3 class="files-title">Archivos seleccionados (<span id="fileCount">0</span>)</h3>
+                <div class="files-list" id="filesList"></div>
+            </div>
+        </section>
+
+        <!-- Botón de procesar -->
+        <section class="action-section hidden" id="actionSection">
+            <button class="btn btn-primary" id="processBtn" disabled>
+                Procesar formularios
+            </button>
+        </section>
+
+        <!-- Barra de progreso -->
+        <section class="progress-section hidden" id="progressSection">
+            <div class="progress-card">
+                <h3 class="progress-title">Procesando formularios...</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p class="progress-text" id="progressText">0% - Iniciando...</p>
+            </div>
+        </section>
+
+        <!-- Resultados -->
+        <section class="results-section hidden" id="resultsSection">
+            <div class="results-card">
+                <h3 class="results-title">✓ Procesamiento completado</h3>
+                
+                <!-- Estadísticas -->
+                <div class="results-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalFiles">0</span>
+                        <span class="stat-label">Total archivos</span>
+                    </div>
+                    <div class="stat-item stat-success">
+                        <span class="stat-number" id="successFiles">0</span>
+                        <span class="stat-label">Exitosos</span>
+                    </div>
+                    <div class="stat-item stat-error">
+                        <span class="stat-number" id="errorFiles">0</span>
+                        <span class="stat-label">Fallidos</span>
+                    </div>
+                </div>
+
+                <!-- Lista de resultados -->
+                <div class="results-details">
+                    <h4 class="results-subtitle">Detalle del procesamiento</h4>
+                    <div class="results-list" id="resultsList"></div>
+                </div>
+
+                <!-- Botones de descarga -->
+                <div class="results-actions">
+                    <button class="btn btn-success" id="downloadBtn">
+                        📦 Descargar archivos exitosos
+                    </button>
+                    <button class="btn btn-secondary" id="downloadLogBtn">
+                        📋 Descargar log completo
+                    </button>
+                    <button class="btn btn-outline" onclick="location.reload()">
+                        🔄 Procesar más archivos
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Alert overlay -->
+    <div class="alert-overlay hidden" id="alertOverlay">
+        <div class="alert-box">
+            <div class="alert-icon" id="alertIcon"></div>
+            <p class="alert-message" id="alertMessage"></p>
+            <button class="btn btn-primary" id="alertClose">Aceptar</button>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/siradig.js"></script>
+</body>
+</html>

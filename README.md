@@ -1,148 +1,216 @@
-# TGA-Tools
+# 🛠️ TGA Tools
 
-Sistema unificado de herramientas administrativas con frontend moderno y backend modular.
+Sistema web para procesamiento automatizado de documentos PDF y generación de reportes Excel para TGA Auditores & Consultores.
 
-## 🚀 Características
+## 📋 Características
 
-- **Dashboard Central**: Landing page con acceso a todas las herramientas
-- **Extractos Bancarios**: Procesamiento async con Celery de PDFs bancarios a Excel
-- **Siradig**: Sistema de registro y análisis digital
-- **Frontend Unificado**: React-like con diseño consistente
-- **Backend Modular**: Flask apps independientes con código compartido
+- **Extractos Bancarios**: Extracción automatizada de datos desde extractos PDF de múltiples bancos
+- **Siradig**: Procesamiento de formularios F.572 Web (AFIP/ARCA)
+- **Consolidador**: Unificación de consolidados mensuales
 
-## 📋 Requisitos
+## 🏗️ Estructura del Proyecto
 
-- Python 3.8+
-- Redis
-- Nginx
-- Tesseract OCR
-- Poppler utils
+```
+tga-tools/
+├── backend/
+│   ├── app.py                 # Aplicación principal Flask
+│   ├── config.py              # Configuración
+│   ├── requirements.txt       # Dependencias Python
+│   ├── routes/                # Endpoints de API
+│   │   ├── __init__.py
+│   │   ├── extractos.py
+│   │   ├── siradig.py
+│   │   └── consolidador.py
+│   ├── services/              # Lógica de negocio
+│   │   ├── __init__.py
+│   │   ├── extractos_service.py
+│   │   ├── siradig_service.py
+│   │   └── consolidador_service.py
+│   ├── uploads/               # Archivos temporales (git-ignored)
+│   ├── output/                # Resultados procesados (git-ignored)
+│   └── logs/                  # Logs de la aplicación (git-ignored)
+└── frontend/
+    ├── index.html             # Página principal
+    ├── extractos.html         # Vista Extractos
+    ├── siradig.html           # Vista Siradig
+    ├── consolidador.html      # Vista Consolidador
+    ├── css/
+    │   └── style.css
+    └── js/
+        ├── api.js             # Cliente API
+        ├── components.js      # Componentes reutilizables
+        ├── main.js
+        ├── extractos.js
+        ├── siradig.js
+        └── consolidador.js
+```
 
-## 🛠️ Instalación
+## 🚀 Instalación
 
-### 1. Clonar repositorio
+### Prerrequisitos
+
+- Python 3.11+
+- pip
+- Git
+
+### En Linux/Mac (opcional para camelot):
 ```bash
-git clone https://github.com/TU-USUARIO/tga-tools.git
+sudo apt-get update
+sudo apt-get install -y ghostscript python3-tk tesseract-ocr tesseract-ocr-spa
+```
+
+### Pasos de instalación
+
+1. **Clonar el repositorio**
+```bash
+git clone <tu-repositorio>
 cd tga-tools
 ```
 
-### 2. Ejecutar setup
+2. **Crear entorno virtual**
 ```bash
-chmod +x scripts/*.sh
-./scripts/setup.sh
+cd backend
+python -m venv venv
 ```
 
-### 3. Configurar variables de entorno
+3. **Activar entorno virtual**
+
+Windows:
 ```bash
-cp config/.env.example config/.env
-nano config/.env  # Editar con tus valores
+venv\Scripts\activate
 ```
 
-### 4. Iniciar servicios
+Linux/Mac:
 ```bash
-./scripts/start_services.sh
+source venv/bin/activate
 ```
 
-## 🌐 URLs
-
-- **Dashboard**: http://localhost
-- **Extractos**: http://localhost/apps/extractos
-- **Siradig**: http://localhost/apps/siradig
-
-## 📁 Estructura
-```
-tga-tools/
-├── frontend/           # Frontend unificado
-│   ├── dashboard/     # Landing page
-│   ├── shared/        # CSS, JS compartido
-│   └── apps/          # Apps específicas
-├── backend/           # Backend modular
-│   ├── shared/        # Código compartido
-│   ├── extractos/     # Backend extractos
-│   └── siradig/       # Backend siradig
-├── config/            # Configuraciones
-└── scripts/           # Scripts de deployment
-```
-
-## 🔧 Comandos
+4. **Instalar dependencias**
 ```bash
-# Iniciar servicios
-./scripts/start_services.sh
-
-# Detener servicios
-./scripts/stop_services.sh
-
-# Deploy (actualizar desde Git)
-./scripts/deploy.sh
-
-# Ver logs
-tail -f logs/extractos-flask.log
-tail -f logs/siradig-flask.log
+pip install -r requirements.txt
 ```
 
-## 🐛 Troubleshooting
+5. **Configurar variables de entorno** (opcional)
 
-### Redis no conecta
+Crear archivo `.env` en la carpeta `backend/`:
+```env
+SECRET_KEY=tu-secret-key-aqui
+FLASK_DEBUG=1
+PORT=5000
+CORS_ORIGINS=http://localhost:5000,http://127.0.0.1:5000
+```
+
+6. **Crear carpetas necesarias**
 ```bash
-sudo systemctl status redis
-sudo systemctl restart redis
+mkdir -p uploads output logs
 ```
 
-### Nginx error
+## ▶️ Ejecución
+
+### Desarrollo
+
 ```bash
-sudo nginx -t  # Verificar config
-sudo systemctl restart nginx
+cd backend
+python app.py
 ```
 
-### Backend no responde
+El servidor estará disponible en: **http://localhost:5000**
+
+### Producción (con Gunicorn)
+
 ```bash
-# Ver logs
-tail -f logs/extractos-flask.log
-
-# Reiniciar
-./scripts/stop_services.sh
-./scripts/start_services.sh
+cd backend
+gunicorn -w 4 -b 0.0.0.0:5000 --timeout 120 "app:create_app()"
 ```
 
-## 🔐 Cloudflare Tunnel
+## 📡 API Endpoints
 
-### Instalación
+### Extractos
+
+- `POST /api/extractos/upload` - Subir archivos PDF
+- `GET /api/extractos/status/<job_id>` - Consultar estado
+- `GET /api/extractos/download/<job_id>` - Descargar resultado
+- `GET /api/extractos/log/<job_id>` - Descargar log
+
+### Siradig
+
+- `POST /api/siradig/upload` - Subir formularios F.572
+- `GET /api/siradig/status/<job_id>` - Consultar estado
+- `GET /api/siradig/download/<job_id>` - Descargar resultado
+- `GET /api/siradig/log/<job_id>` - Descargar log
+
+### Consolidador
+
+- `POST /api/consolidador/upload` - Subir archivos Excel
+- `GET /api/consolidador/status/<job_id>` - Consultar estado
+- `GET /api/consolidador/download/<job_id>` - Descargar resultado
+- `GET /api/consolidador/log/<job_id>` - Descargar log
+
+### Health Check
+
+- `GET /api/health` - Verificar estado del servidor
+
+## 🔧 Desarrollo
+
+### Agregar una nueva herramienta
+
+1. Crear route en `routes/tu_herramienta.py`
+2. Crear service en `services/tu_herramienta_service.py`
+3. Registrar blueprint en `app.py`
+4. Crear vista HTML en `frontend/tu_herramienta.html`
+5. Crear lógica JS en `frontend/js/tu_herramienta.js`
+
+### Testing
+
 ```bash
-# Descargar cloudflared
-wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
-sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
-sudo chmod +x /usr/local/bin/cloudflared
-
-# Login
-cloudflared tunnel login
-
-# Crear tunnel
-cloudflared tunnel create tga-tools
-
-# Configurar
-cat > ~/.cloudflared/config.yml << EOF
-tunnel: TU-TUNNEL-ID
-credentials-file: /home/USER/.cloudflared/TU-TUNNEL-ID.json
-
-ingress:
-  - hostname: tga-tools.tudominio.com
-    service: http://localhost:80
-  - service: http_status:404
-EOF
-
-# Crear ruta DNS
-cloudflared tunnel route dns tga-tools tga-tools.tudominio.com
-
-# Instalar como servicio
-sudo cloudflared service install
-sudo systemctl start cloudflared
-sudo systemctl enable cloudflared
+# Ejecutar tests (cuando existan)
+pytest tests/
 ```
 
-## 📝 Licencia
+## 📝 Logs
 
-MIT
+Los logs se guardan en la carpeta `logs/` y en la consola con el formato:
 
-## 👤 Autor
+```
+YYYY-MM-DD HH:MM:SS - nombre_modulo - NIVEL - mensaje
+```
 
-Tu Nombre
+## ⚠️ Troubleshooting
+
+### Error: "No se enviaron archivos"
+- Verificar que el frontend esté enviando correctamente los archivos
+- Revisar la consola del navegador (F12) para errores de CORS
+
+### Error: "ModuleNotFoundError"
+- Asegurarse de tener el entorno virtual activado
+- Reinstalar dependencias: `pip install -r requirements.txt`
+
+### El servidor no inicia
+- Verificar que el puerto 5000 no esté ocupado
+- Revisar los logs en consola
+
+### Camelot no funciona
+- Instalar ghostscript: `sudo apt-get install ghostscript` (Linux)
+- En Windows, descargar Ghostscript desde su sitio oficial
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crear una rama (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit los cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abrir un Pull Request
+
+## 📄 Licencia
+
+Uso interno de TGA Auditores & Consultores - Mendoza, Argentina
+
+## 👥 Contacto
+
+TGA Auditores & Consultores  
+Mendoza, Argentina
+
+---
+
+**Versión:** 1.0.0  
+**Última actualización:** Octubre 2025

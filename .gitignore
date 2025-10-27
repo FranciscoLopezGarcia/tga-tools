@@ -1,12 +1,9 @@
-# Python
+# ==================== PYTHON ====================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-venv/
-env/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -22,32 +19,17 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Flask
-instance/
-.webassets-cache
+# ==================== VIRTUAL ENVIRONMENTS ====================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
 
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# Logs
-*.log
-logs/
-*.pid
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Uploads y outputs
-backend/*/uploads/*
-backend/*/output/*
-!backend/*/uploads/.gitkeep
-!backend/*/output/.gitkeep
-
-# IDEs
+# ==================== IDEs ====================
 .vscode/
 .idea/
 *.swp
@@ -55,17 +37,46 @@ backend/*/output/*
 *~
 .DS_Store
 
-# Nginx
-/etc/nginx/nginx.conf.backup.*
+# ==================== ENVIRONMENT VARIABLES ====================
+.env
+.env.local
+.env.*.local
 
-# Redis
-dump.rdb
+# ==================== LOGS ====================
+*.log
+logs/
+*.log.*
 
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.backup
+# ==================== UPLOADS Y OUTPUTS (temporal) ====================
+uploads/
+output/
+temp/
+tmp/
 
-# OS
+# ==================== TESTING ====================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ==================== JUPYTER ====================
+.ipynb_checkpoints/
+*.ipynb
+
+# ==================== ARCHIVOS DE SISTEMA ====================
 Thumbs.db
+desktop.ini
+
+# ==================== ESPECÍFICOS DEL PROYECTO ====================
+# Archivos de prueba
+test_files/
+*.pdf
+*.xlsx
+*.xls
+*.zip
+
+# Mantener carpetas pero no el contenido
+!uploads/.gitkeep
+!output/.gitkeep
+!logs/.gitkeep

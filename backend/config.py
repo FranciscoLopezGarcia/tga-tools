@@ -16,7 +16,7 @@ class Config:
     
     # Límites
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB max
-    
+
     # CORS
     CORS_ORIGINS = ["http://localhost:5000", "http://127.0.0.1:5000"]
 
@@ -41,9 +41,9 @@ if ENVIRONMENT == "docker":
     DEFAULT_POPPLER_PATH = "/usr/bin"
 
 elif ENVIRONMENT == "windows":
-    # 🔧 Ruta en carpeta de usuario (sin permisos de admin)
     DEFAULT_TESSERACT_PATH = r"C:\tools\tesseract\tesseract.exe"
     DEFAULT_POPPLER_PATH = r"C:\tools\poppler\poppler-25.07.0\Library\bin"
+
 
 
 

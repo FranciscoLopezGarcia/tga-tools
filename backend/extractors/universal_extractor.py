@@ -234,16 +234,19 @@ class UniversalExtractor:
 
         if should_use_ocr:
             try:
-                ocr_text = ocr_extract_pages(pdf_path, max_pages=self.max_ocr_pages)
-                if ocr_text:
+                ocr_pages = ocr_extract_pages(pdf_path, max_pages=self.max_ocr_pages)
+                if ocr_pages:
                     used_ocr = True
-                    if isinstance(ocr_text, list):
-                        ocr_lines_raw = []
-                        for item in ocr_text:
-                            if isinstance(item, str):
-                                ocr_lines_raw.extend(item.splitlines())
-                        text_lines_raw.extend(ocr_lines_raw)
-                        text_lines_clean = _preclean_lines(text_lines_raw)
+                    # 🔧 OCR devuelve [(page_num, texto), ...]
+                    ocr_lines_raw = []
+                    for page_num, page_text in ocr_pages:
+                        # Agregar cada línea del texto de la página
+                        ocr_lines_raw.extend(page_text.splitlines())
+                    
+                    # Reemplazar text_lines_raw completamente con OCR
+                    text_lines_raw = ocr_lines_raw
+                    text_lines_clean = _preclean_lines(text_lines_raw)
+                    logger.info(f"✅ OCR extrajo {len(ocr_lines_raw)} líneas totales")
             except Exception as e:
                 logger.error(f"OCR falló: {e}")
 

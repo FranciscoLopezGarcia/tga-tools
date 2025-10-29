@@ -3,11 +3,13 @@ from flask_cors import CORS
 from config import Config
 import os
 import logging
-
-# Importar blueprints
 from routes.extractos import extractos_bp
 from routes.siradig import siradig_bp
 from routes.consolidador import consolidador_bp
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 # Configurar logging
 logging.basicConfig(

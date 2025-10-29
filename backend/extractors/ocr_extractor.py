@@ -6,18 +6,27 @@ from typing import List, Tuple
 from pdf2image import convert_from_path
 import pytesseract
 from PIL import Image, ImageOps
+from dotenv import load_dotenv
+
+# === Cargar variables de entorno ===
+# (si no existe .env, no rompe)
+load_dotenv()
 
 # 🔧 CONFIGURAR TESSDATA_PREFIX ANTES DE USAR TESSERACT
 # Esto evita errores de "spa.traineddata not found"
-os.environ["TESSDATA_PREFIX"] = r"C:\tools\tesseract\tessdata"
+tessdata_env = os.getenv("TESSDATA_PREFIX")
+if tessdata_env:
+    os.environ["TESSDATA_PREFIX"] = tessdata_env
+else:
+    os.environ["TESSDATA_PREFIX"] = r"deps\tesseract\tessdata"
 
 # 💇 Integración con config.py de TGA-tools
 try:
     from config import TESSERACT_PATH, POPPLER_PATH
 except ImportError:
     # Fallback si se ejecuta standalone
-    TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    POPPLER_PATH = r"C:\poppler-24.08.0\bin"
+    TESSERACT_PATH = os.getenv("TESSERACT_CMD", r"deps\tesseract\tesseract.exe")
+    POPPLER_PATH = os.getenv("POPPLER_PATH", r"deps\poppler\poppler-25.07.0\Library\bin")
 
 # Forzamos la ruta del ejecutable de Tesseract
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
@@ -46,7 +55,7 @@ class OCRExtractor:
             default_tesseract = "/usr/bin/tesseract"
             default_poppler = "/usr/bin"
 
-        # 🔧 Resolución final de paths
+        # 🔧 Resolución final de paths (prioridad: ENV > argumento > fallback)
         self.tesseract_cmd = os.getenv("TESSERACT_PATH") or tesseract_cmd or default_tesseract
         self.poppler_bin = os.getenv("POPPLER_PATH") or poppler_bin or default_poppler
         self.lang = lang

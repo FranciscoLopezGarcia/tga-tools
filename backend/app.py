@@ -29,11 +29,12 @@ def create_app():
     os.makedirs(app.config['LOG_FOLDER'], exist_ok=True)
 
     # CORS - permite requests desde el mismo origen
+    # CORS - permite requests desde cualquier origen
     CORS(app, 
-         origins=["http://localhost:5000", "http://127.0.0.1:5000", "*"],
-         allow_headers=["Content-Type"],
-         methods=["GET", "POST", "OPTIONS"],
-         supports_credentials=True)
+        origins=["*"],
+        allow_headers=["Content-Type", "ngrok-skip-browser-warning"],
+        methods=["GET", "POST", "OPTIONS"],
+        supports_credentials=False)
 
     # Registrar blueprints
     app.register_blueprint(extractos_bp, url_prefix='/api/extractos')

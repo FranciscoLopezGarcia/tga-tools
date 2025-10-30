@@ -3,7 +3,7 @@
  * Centraliza todas las peticiones HTTP a los diferentes endpoints
  */
 
-const API_BASE_URL = '/api'; // Ajustar según tu backend
+const API_BASE_URL = 'https://tga-tools.ngrok.app/api';
 
 /**
  * Configuración de endpoints por herramienta
